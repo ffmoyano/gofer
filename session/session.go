@@ -12,7 +12,6 @@ type Sessions map[string]Session
 type Session struct {
 	userId     int
 	expiration time.Time
-	token      string
 }
 
 func (session Session) checkExpiration() bool {
@@ -41,7 +40,6 @@ func Generate(userId int, sessionManager Sessions) (http.Cookie, error) {
 	session := Session{
 		userId:     userId,
 		expiration: expiration,
-		token:      token,
 	}
 	cookie := http.Cookie{
 		Expires: expiration,
@@ -52,6 +50,6 @@ func Generate(userId int, sessionManager Sessions) (http.Cookie, error) {
 	return cookie, nil
 }
 
-func (sessionManager Sessions) deleteSession(session Session) {
-	delete(sessionManager, session.token)
+func (sessionManager Sessions) deleteSession(token string) {
+	delete(sessionManager, token)
 }
