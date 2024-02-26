@@ -14,11 +14,11 @@ type Session struct {
 	expiration time.Time
 }
 
-func (session Session) checkExpiration() bool {
+func (session Session) isExpired() bool {
 	return session.expiration.Before(time.Now())
 }
 
-func generateSessionId() (string, error) {
+func generateToken() (string, error) {
 	b := make([]byte, 32)
 	_, err := rand.Read(b)
 	if err != nil {
@@ -31,9 +31,9 @@ func InitializeSessionManager() Sessions {
 	return make(Sessions)
 }
 
-func Generate(userId int, sessionManager Sessions) (http.Cookie, error) {
+func (sessionManager Sessions) Add(userId int) (http.Cookie, error) {
 	expiration := time.Now().Add(time.Minute * 30)
-	token, err := generateSessionId()
+	token, err := generateToken()
 	if err != nil {
 		return http.Cookie{}, err
 	}
@@ -50,6 +50,6 @@ func Generate(userId int, sessionManager Sessions) (http.Cookie, error) {
 	return cookie, nil
 }
 
-func (sessionManager Sessions) deleteSession(token string) {
+func (sessionManager Sessions) Remove(token string) {
 	delete(sessionManager, token)
 }
